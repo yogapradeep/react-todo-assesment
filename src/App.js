@@ -6,7 +6,12 @@ import useDarkMode from "use-dark-mode";
 import { Layout } from "./layout";
 import { Box } from "./components/Box";
 import TodoList from "./components/TodoList";
+
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
 const Login = React.lazy(() => import("./views/Login")); // Lazy-loaded
+
 
 
 
@@ -43,6 +48,7 @@ const App = () => {
   // !!!! user için obje kontrolü yapıcaz
   return (
     <NextUIProvider theme={darkMode.value ? darkTheme : lightTheme}>
+       <LocalizationProvider dateAdapter={AdapterDayjs}>
       {user.length > 0 && user[0] !== undefined ? (
         <Layout>
           <Box css={{ px: "$24", mt: "$8", "@xsMax": { px: "$10" } }}>
@@ -69,6 +75,7 @@ const App = () => {
           <Login />
         </Suspense>
       )}
+      </LocalizationProvider>
     </NextUIProvider>
   );
 };

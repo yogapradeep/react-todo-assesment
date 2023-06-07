@@ -18,11 +18,25 @@ import { DeleteIcon } from "./icons/deleteIcon";
 import { IconButton } from "./icons/IconButton";
 import { EditIcon } from "./icons/editIcon";
 import { EyeIcon } from "./icons/eyeIcon";
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import dayjs, { Dayjs } from 'dayjs';
 
 const TodoCard = ({ item, setTodos, setLoading }) => {
   const [visible, setVisible] = useState(false);
   const [task_msg, setTask_msg] = useState(item.task_msg);
   const [completed, setCompleted] = useState(null);
+  
+  const formattedDate = dayjs(item.task_date).format('DD-MM-YYYY');
+  console.log(formattedDate); // output 16.06.2023
+
+  const hours = Math.floor(item.task_time / 3600);
+  const minutes = Math.floor((item.task_time  % 3600) / 60);
+  const period = hours >= 12 ? 'pm' : 'am';
+
+  const formattedTime = `${String(hours % 12).padStart(2, '0')}:${String(minutes).padStart(2, '0')}${period}`;
+
+console.log(formattedTime); // Output: "01:30am"
 
   const handler = () => setVisible(true);
 
@@ -72,7 +86,6 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
       isCompleted: completed === null ? item.isCompleted : completed,
       task_msg: task_msg === "" ? item.task_msg : task_msg,
     };
-    GetPhotos(query.task_msg).then((res) => {
       UpdateTodo(id, {
         isCompleted: completed === null ? item.isCompleted : completed,
         task_msg: task_msg === "" ? item.task_msg : task_msg,
@@ -85,30 +98,21 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
         GetTodos().then((res) => setTodos(res.data));
         notify("Updated");
       });
-    }).catch((err) => {
-      UpdateTodo(id, {
-        isCompleted: completed === null ? item.isCompleted : completed,
-        task_msg: task_msg === "" ? item.task_msg : task_msg,
-      })
-      .then((res) => notify("Updating"))
-      .catch((err) => {
-        notify("Upss somethings went wrong")
-      })
-      .finally(() => {
-        GetTodos().then((res) => setTodos(res.data));
-        notify("Updated");
-      });
-    })
-    
+
     setVisible(false);
   };
+  
+  
+
+
   return (
     <>
-      <Card>
+      <Card  >
+        
         <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
           <Col>
             <Tooltip
-              task_msg={
+              content={
                 item.isCompleted === true ? "Completed" : "Not Completed"
               }
               color={item.isCompleted === true ? "success" : "error"}
@@ -119,19 +123,23 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
                 variant="points"
               />
             </Tooltip>
-            <Badge enableShadow disableOutline>
-              {item.task_msg}
-            </Badge>
+            
           </Col>
         </Card.Header>
-        <Card.Body css={{ p: 0 }}>
-          <Card.Image
-            src={item.imgUrl ? item.imgUrl : "https://nextui.org/images/card-example-6.jpeg"}
-            width="100%"
-            height={300}
-            objectFit="cover"
-            alt="Card example background"
-          />
+        <Card.Body css={{ pt: 50,
+        width: 300,
+         height: 300,
+          }}>
+           
+              
+      <Text h3>{item.task_msg}</Text>
+      <Text h5>{formattedDate} at {formattedTime}</Text>
+
+      <Text h5>Date,Time, Zone format to API</Text>
+      <Text h5>{item.task_date}</Text>
+      <Text h6>{item.task_time}</Text>
+      <Text h6>{item.time_zone}</Text>
+      
         </Card.Body>
         <Card.Footer
           isBlurred
@@ -144,13 +152,13 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
           }}
         >
           <Row>
-            <Tooltip task_msg="Edit Todo">
+            <Tooltip content="Edit Todo">
               <IconButton onClick={handler}>
                 <EditIcon size={30} fill="#16181A" />
               </IconButton>
             </Tooltip>
             <Tooltip
-              task_msg={
+              content={
                 item.isCompleted === true ? "Do UnCompleted" : "Do Completed"
               }
             >
@@ -163,7 +171,7 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
             </Tooltip>
             <Col>
               <Row justify="flex-end">
-                <Tooltip task_msg="Delete Todo" color="error">
+                <Tooltip content="Delete Todo" color="error">
                   <IconButton onClick={() => handleDeleteTodo(item.id)}>
                     <DeleteIcon size={30} fill="#FF0080" />
                   </IconButton>

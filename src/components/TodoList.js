@@ -12,12 +12,20 @@ import { ToastContainer, toast } from "react-toastify";
 import { Box } from "./Box";
 import TodoCard from "./TodoCard";
 import { GetTodos, AddTodo } from "../api/http/todosRequest";
-import {GetPhotos} from "../api/http/unsplashRequest"
+
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs, { Dayjs } from 'dayjs';
 
 const TodoList = () => {
   const { type, theme } = useTheme();
   const [todos, setTodos] = useState([]);
   const [task_msg, setTask_msg] = useState("");
+  const [task_date, setTask_date] = useState("");
+  const [task_time, setTask_time] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const todosPerPage = 8;
@@ -40,8 +48,17 @@ const TodoList = () => {
   const handleAddTodo = () => {
     setLoading(true);
     if(task_msg.trim().length > 2){
-      GetPhotos(task_msg).then((res) =>  
-      AddTodo({task_msg:task_msg,imgUrl:res.data.results[Math.floor(Math.random() * 10)].urls.regular})
+      const formattedTime = dayjs(task_time).format('HH:mm:ss');
+      console.log("before conversion",formattedTime);
+const [hours, minutes] = formattedTime.split(":");
+const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+
+console.log(timeInSeconds);    
+const currentDate = new Date();
+const timezoneOffsetInSeconds = Math.abs(currentDate.getTimezoneOffset() * 60);
+console.log(timezoneOffsetInSeconds);
+
+      AddTodo({task_msg:task_msg, task_date:task_date, task_time:timeInSeconds, time_zone:timezoneOffsetInSeconds })
       .then((res) => notify("Adding"))
       .catch((err) => notify("Upss somethings went wrong"))
       .finally(() => {
@@ -56,29 +73,15 @@ const TodoList = () => {
             setLoading(false);
             notify("Success");
           });
-      })).catch((err) => {
-       AddTodo({task_msg:task_msg,imgUrl:"https://nextui.org/images/card-example-6.jpeg"})
-       .then((res) => notify("Adding"))
-       .catch((err) => notify("Upss somethings went wrong"))
-       .finally(() => {
-         GetTodos()
-           .then((res) => {
-             setTodos(res.data);
-           })
-           .catch((err) => {
-             notify("Upss somethings went wrong");
-           })
-           .finally(() => {
-             setLoading(false);
-             notify("Success");
-           });
-       })
       })
     }else {
       notify("Todo content length min 3 characters")
     }
    
     setTask_msg("");
+    setTask_date("");
+    setTask_time("");
+  
   };
 
   useEffect(() => {
@@ -128,11 +131,34 @@ const TodoList = () => {
               width="400px"
               clearable
               bordered
-              labelPlaceholder="Content"
+              labelPlaceholder="Task Desc"
               value={task_msg}
               onChange={(e) => setTask_msg(e.target.value)}
               onKeyDown={handleKeyDown}
+              css={{
+                mr: "$10",
+              }}
             />
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Date" 
+              value={task_date}
+              onChange={(newvalue) => {
+                const formattedDate = dayjs(newvalue).format('YYYY-MM-DD');
+                setTask_date(formattedDate)}}
+            />
+                </LocalizationProvider>
+
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                      label="Time"
+                      value={task_time}
+                      onChange={(newValue) =>{
+            setTask_time(newValue)
+                      } } />
+                  </LocalizationProvider>
+
             <Button
               onClick={handleAddTodo}
               css={{ ml: "$10" }}
