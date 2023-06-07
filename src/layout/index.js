@@ -1,5 +1,7 @@
 import { Box } from "../components/Box";
 import Navbar from "./Navbar";
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 export const Layout = ({ children }) => (
   <Box
@@ -8,6 +10,8 @@ export const Layout = ({ children }) => (
     }}
   >
     <Navbar />
-    {children}
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      {children}
+    </LocalizationProvider>
   </Box>
 );
