@@ -36,14 +36,6 @@ const TodoList = () => {
   const currentTodos = todos.sort((a,b) => b.id - a.id).slice(indexOfFirstTodo, indexOfLastTodo);
 
 
- // console.log(SortedArray)
-
-//  Authentication().then((res) => notify("Authentication sucessfull"))
-//  .catch((err) => notify("Upss somethings went wrong"))
-//  .finally(() => {
-//   setLoading(false);
-//   notify("Success");
-//   })
   const notify = (proccess) => toast(proccess);
 
   const handleKeyDown = (event) => {

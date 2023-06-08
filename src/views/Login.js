@@ -47,16 +47,9 @@ const Login = () => {
         .catch(error => {
           console.error(error);
         });
-//          .then((res) => 
-        
-//          notify("Authentication sucessfull"))
-//          console.log("Authentication sucessfull")
-//          localStorage.setItem("token",JSON.stringify(user))
-//          window.location.reload()
-//  .catch((err) => notify("Upss somethings went wrong"))
  
       }else {
-        notify("Username/Password doesn't correct characters")
+        notify("Username/Password doesn't correct")
       } 
   };
 
