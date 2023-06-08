@@ -40,12 +40,9 @@ const App = () => {
   
   }, []);
 
-  // const query = {
-  //   content : "update",
-  //   isCompleted:true
-  // }
+  
 
-  // !!!! user için obje kontrolü yapıcaz
+  
   return (
     <NextUIProvider theme={darkMode.value ? darkTheme : lightTheme}>
        <LocalizationProvider dateAdapter={AdapterDayjs}>

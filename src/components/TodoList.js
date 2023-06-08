@@ -36,14 +36,6 @@ const TodoList = () => {
   const currentTodos = todos.sort((a,b) => b.id - a.id).slice(indexOfFirstTodo, indexOfLastTodo);
 
 
- // console.log(SortedArray)
-
-//  Authentication().then((res) => notify("Authentication sucessfull"))
-//  .catch((err) => notify("Upss somethings went wrong"))
-//  .finally(() => {
-//   setLoading(false);
-//   notify("Success");
-//   })
   const notify = (proccess) => toast(proccess);
 
   const handleKeyDown = (event) => {
@@ -65,7 +57,7 @@ const currentDate = new Date();
 const timezoneOffsetInSeconds = Math.abs(currentDate.getTimezoneOffset() * 60);
 console.log(timezoneOffsetInSeconds);
 
-      AddTodo({assigned_user:"user_8c2ff2128e70493fa4cedd2cab97c492", task_date:task_date, task_time:timeInSeconds, time_zone:timezoneOffsetInSeconds,  is_completed:false, task_msg:task_msg })
+      AddTodo({assigned_user:"user_8c2ff2128e70493fa4cedd2cab97c492", task_date:task_date, task_time:timeInSeconds, time_zone:timezoneOffsetInSeconds,  is_completed:0, task_msg:task_msg })
       .then((res) => notify("Addedtasks"))
       .catch((err) => notify("Upss somethings went wrong"))
       .finally(() => {
