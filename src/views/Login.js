@@ -80,11 +80,14 @@ const Login = () => {
               justifyContent: "center",
             }}
           >
-            <Button flat auto rounded color="neutral" onClick={handleLogin}>
+            <Button  
+            auto rounded  shadow color="default" onClick={handleLogin} 
+            >
               <Text
-                color={theme.colors.accents5.value}
+                color="white"
                 weight="bold"
                 transform="uppercase"
+                
               >
                 Login
               </Text>
