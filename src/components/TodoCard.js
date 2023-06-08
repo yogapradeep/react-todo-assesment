@@ -13,7 +13,6 @@ import {
 } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import { DeleteTodo, GetTodos, UpdateTodo } from "../api/http/todosRequest";
-import { GetPhotos } from "../api/http/unsplashRequest";
 import { DeleteIcon } from "./icons/deleteIcon";
 import { IconButton } from "./icons/IconButton";
 import { EditIcon } from "./icons/editIcon";
@@ -54,7 +53,7 @@ console.log(formattedTime); // Output: "01:30am"
         notify("Upss somethings went wrong")
       })
       .finally(() => {
-        GetTodos().then((res) => setTodos(res.data));
+        GetTodos().then((res) => setTodos(res.data.results));
         notify("Deleted");
       });
     setLoading(false);
@@ -70,7 +69,7 @@ console.log(formattedTime); // Output: "01:30am"
         notify("Upss somethings went wrong")
       })
       .finally(() => {
-        GetTodos().then((res) => setTodos(res.data));
+        GetTodos().then((res) => setTodos(res.data.results));
         notify("Updated");
       });
   };
@@ -83,7 +82,7 @@ console.log(formattedTime); // Output: "01:30am"
 
   const handleUpdateTodo = (id) => {
     const query = {
-      isCompleted: completed === null ? item.isCompleted : completed,
+      isCompleted: completed === null ? item.isCompleted :completed ,
       task_msg: task_msg === "" ? item.task_msg : task_msg,
     };
       UpdateTodo(id, {
@@ -95,7 +94,7 @@ console.log(formattedTime); // Output: "01:30am"
         notify("Upss somethings went wrong")
       })
       .finally(() => {
-        GetTodos().then((res) => setTodos(res.data));
+        GetTodos().then((res) => setTodos(res.data.results));
         notify("Updated");
       });
 
@@ -128,17 +127,17 @@ console.log(formattedTime); // Output: "01:30am"
         </Card.Header>
         <Card.Body css={{ pt: 50,
         width: 300,
-         height: 300,
+         height: 200,
           }}>
            
               
       <Text h3>{item.task_msg}</Text>
       <Text h5>{formattedDate} at {formattedTime}</Text>
 
-      <Text h5>Date,Time, Zone format to API</Text>
+      {/* <Text h5>Date,Time, Zone format to API</Text>
       <Text h5>{item.task_date}</Text>
       <Text h6>{item.task_time}</Text>
-      <Text h6>{item.time_zone}</Text>
+      <Text h6>{item.time_zone}</Text> */}
       
         </Card.Body>
         <Card.Footer
