@@ -7,11 +7,12 @@ import {
   useTheme,
   Text,
   Pagination,
+  Dropdown
 } from "@nextui-org/react";
 import { ToastContainer, toast } from "react-toastify";
 import { Box } from "./Box";
 import TodoCard from "./TodoCard";
-import { GetTodos, AddTodo } from "../api/http/todosRequest";
+import { GetTodos, AddTodo, TeamApi} from "../api/http/todosRequest";
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -37,6 +38,12 @@ const TodoList = () => {
 
  // console.log(SortedArray)
 
+//  Authentication().then((res) => notify("Authentication sucessfull"))
+//  .catch((err) => notify("Upss somethings went wrong"))
+//  .finally(() => {
+//   setLoading(false);
+//   notify("Success");
+//   })
   const notify = (proccess) => toast(proccess);
 
   const handleKeyDown = (event) => {
@@ -58,13 +65,14 @@ const currentDate = new Date();
 const timezoneOffsetInSeconds = Math.abs(currentDate.getTimezoneOffset() * 60);
 console.log(timezoneOffsetInSeconds);
 
-      AddTodo({task_msg:task_msg, task_date:task_date, task_time:timeInSeconds, time_zone:timezoneOffsetInSeconds })
-      .then((res) => notify("Adding"))
+      AddTodo({assigned_user:"user_8c2ff2128e70493fa4cedd2cab97c492", task_date:task_date, task_time:timeInSeconds, time_zone:timezoneOffsetInSeconds,  is_completed:false, task_msg:task_msg })
+      .then((res) => notify("Addedtasks"))
       .catch((err) => notify("Upss somethings went wrong"))
       .finally(() => {
+        
         GetTodos()
           .then((res) => {
-            setTodos(res.data);
+            setTodos(res.data.results);
           })
           .catch((err) => {
            notify("Upss somethings went wrong");
@@ -87,7 +95,7 @@ console.log(timezoneOffsetInSeconds);
   useEffect(() => {
     GetTodos()
       .then((res) => {
-        setTodos(res.data);
+        setTodos(res.data.results);
       })
       .catch((err) => {
         console.log(err);
@@ -158,6 +166,18 @@ console.log(timezoneOffsetInSeconds);
             setTask_time(newValue)
                       } } />
                   </LocalizationProvider>
+
+
+                  
+                  <Dropdown id="userDropdown">
+      <Dropdown.Button flat>user</Dropdown.Button>
+      <Dropdown.Menu aria-label="user">
+        <Dropdown.Item key="new">User1</Dropdown.Item>
+        <Dropdown.Item key="copy">User2</Dropdown.Item>
+        <Dropdown.Item key="edit">User3</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+
 
             <Button
               onClick={handleAddTodo}
