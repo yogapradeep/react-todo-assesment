@@ -60,28 +60,28 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
   };
 
   
-  const handleSetCompleted = (id) => {
-    const query = {
-      isCompleted: completed ,
-    };
-    UpdateTodo(id, {
-      "assigned_user": item.assigned_user,
-      "task_date": item.task_date,
-      "task_time": item.task_time,
-      "is_completed": completed,
-      "time_zone": item.time_zone,
-      "task_msg": task_msg === "" ? item.task_msg : task_msg
+  // const handleSetCompleted = (id) => {
+  //   const query = {
+  //     isCompleted: completed ,
+  //   };
+  //   UpdateTodo(id, {
+  //     "assigned_user": item.assigned_user,
+  //     "task_date": item.task_date,
+  //     "task_time": item.task_time,
+  //     "is_completed": completed,
+  //     "time_zone": item.time_zone,
+  //     "task_msg": task_msg === "" ? item.task_msg : task_msg
 
-    })
-      .then((res) => notify("Updating"))
-      .catch((err) => {
-        notify("Upss somethings went wrong")
-      })
-      .finally(() => {
-        GetTodos().then((res) => setTodos(res.data.results));
-        notify("Updated");
-      });
-  };
+  //   })
+  //     .then((res) => notify("Updating"))
+  //     .catch((err) => {
+  //       notify("Upss somethings went wrong")
+  //     })
+  //     .finally(() => {
+  //       GetTodos().then((res) => setTodos(res.data.results));
+  //       notify("Updated");
+  //     });
+  // };
   
 
   const handleKeyDown = (event) => {
@@ -179,12 +179,12 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
                 item.isCompleted === 1 ? "Do UnCompleted" : "Do Completed"
               }
             >
-              <IconButton
+              {/* <IconButton
                 css={{ ml: "20px" }}
                 onClick={() => handleSetCompleted(item.id)}
               >
                 <EyeIcon size={30} fill="#16181A" />
-              </IconButton>
+              </IconButton> */}
             </Tooltip>
             <Col>
               <Row justify="flex-end">
