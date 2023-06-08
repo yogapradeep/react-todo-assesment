@@ -17,7 +17,7 @@ https://pradeep-react-todo.netlify.app/
 ### Light Mode 
 ![login-light](./public/login_page.png)
 ![todo-light](./public/homepage.png)
-![todo-light-modal](./public/update_modal.png.png)
+![todo-light-modal](./public/update_modal.png)
 
 ### Dark Mode 
 ![todo-todo](./public/darkmode_homepage.png)
