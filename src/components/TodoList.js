@@ -12,7 +12,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import { Box } from "./Box";
 import TodoCard from "./TodoCard";
-import { GetTodos, AddTodo, TeamApi} from "../api/http/todosRequest";
+import { GetTodos, AddTodo, TeamApi } from "../api/http/todosRequest";
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -31,9 +31,21 @@ const TodoList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const todosPerPage = 8;
 
+  const [users, setUsers] = useState([]);
+
   const indexOfLastTodo = currentPage * todosPerPage;
   const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
-  const currentTodos = todos.sort((a,b) => b.id - a.id).slice(indexOfFirstTodo, indexOfLastTodo);
+  const currentTodos = todos.sort((a, b) => b.id - a.id).slice(indexOfFirstTodo, indexOfLastTodo);
+
+
+
+
+  const [UserSelected, setUserSelected] = React.useState(new Set(["User"]));
+
+  const selectedValue = React.useMemo(
+    () => Array.from(UserSelected).join(", ").replaceAll("_", " "),
+    [UserSelected]
+  );
 
 
   const notify = (proccess) => toast(proccess);
@@ -46,45 +58,53 @@ const TodoList = () => {
 
   const handleAddTodo = () => {
     setLoading(true);
-    if(task_msg.trim().length > 2){
+    if (task_msg.trim().length > 2) {
+
       const formattedTime = dayjs(task_time).format('HH:mm:ss');
-      console.log("before conversion",formattedTime);
-const [hours, minutes] = formattedTime.split(":");
-const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+      // console.log("before conversion", formattedTime);
+      const [hours, minutes] = formattedTime.split(":");
+      const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
 
-console.log(timeInSeconds);    
-const currentDate = new Date();
-const timezoneOffsetInSeconds = Math.abs(currentDate.getTimezoneOffset() * 60);
-console.log(timezoneOffsetInSeconds);
+      // console.log(timeInSeconds);
+      const currentDate = new Date();
+      const timezoneOffsetInSeconds = Math.abs(currentDate.getTimezoneOffset() * 60);
+      // console.log(timezoneOffsetInSeconds);
 
-      AddTodo({assigned_user:"user_8c2ff2128e70493fa4cedd2cab97c492", task_date:task_date, task_time:timeInSeconds, time_zone:timezoneOffsetInSeconds,  is_completed:0, task_msg:task_msg })
-      .then((res) => notify("Addedtasks"))
-      .catch((err) => notify("Upss somethings went wrong"))
-      .finally(() => {
-        
-        GetTodos()
-          .then((res) => {
-            setTodos(res.data.results);
-          })
-          .catch((err) => {
-           notify("Upss somethings went wrong");
-          })
-          .finally(() => {
-            setLoading(false);
-            notify("Success");
-          });
-      })
-    }else {
+      AddTodo({ assigned_user: selectedValue, task_date: task_date, task_time: timeInSeconds, time_zone: timezoneOffsetInSeconds, is_completed: 0, task_msg: task_msg })
+        .then((res) => notify("Addedtasks"))
+        .catch((err) => notify("Upss somethings went wrong"))
+        .finally(() => {
+
+          GetTodos()
+            .then((res) => {
+              setTodos(res.data.results);
+            })
+            .catch((err) => {
+              notify("Upss somethings went wrong");
+            })
+            .finally(() => {
+              setLoading(false);
+              notify("Success");
+            });
+        })
+    } else {
       notify("Todo content length min 3 characters")
     }
-   
+
     setTask_msg("");
     setTask_date("");
     setTask_time("");
-  
+
   };
 
   useEffect(() => {
+    TeamApi().then((res) => {
+      setUsers(res.data.results.data);
+
+    }).catch((err) => {
+      console.log(err);
+    });
+
     GetTodos()
       .then((res) => {
         setTodos(res.data.results);
@@ -93,8 +113,10 @@ console.log(timezoneOffsetInSeconds);
         console.log(err);
       });
 
-     
+
   }, []);
+
+
 
   if (todos) {
     return (
@@ -141,36 +163,47 @@ console.log(timezoneOffsetInSeconds);
             />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Date" 
-              value={task_date}
-              onChange={(newvalue) => {
-                const formattedDate = dayjs(newvalue).format('YYYY-MM-DD');
-                setTask_date(formattedDate)}}
-            />
-                </LocalizationProvider>
+              <DatePicker
+                label="Date"
+                value={task_date}
+                onChange={(newvalue) => {
+                  const formattedDate = dayjs(newvalue).format('YYYY-MM-DD');
+                  setTask_date(formattedDate)
+                }}
+              />
+            </LocalizationProvider>
 
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <TimePicker
-                      label="Time"
-                      value={task_time}
-                      onChange={(newValue) =>{
-            setTask_time(newValue)
-                      } } />
-                  </LocalizationProvider>
-
-
-                  
-                  <Dropdown id="userDropdown">
-      <Dropdown.Button flat>user</Dropdown.Button>
-      <Dropdown.Menu aria-label="user">
-        <Dropdown.Item key="new">User1</Dropdown.Item>
-        <Dropdown.Item key="copy">User2</Dropdown.Item>
-        <Dropdown.Item key="edit">User3</Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <TimePicker
+                label="Time"
+                value={task_time}
+                onChange={(newValue) => {
+                  setTask_time(newValue)
+                }} />
+            </LocalizationProvider>
 
 
+
+            {console.log(users)}
+            <Dropdown>
+              <Dropdown.Button flat>{selectedValue}</Dropdown.Button>
+              <Dropdown.Menu aria-label="Single selection actions"
+                color="secondary"
+                disallowEmptySelection
+                selectionMode="single"
+                selectedKeys={UserSelected}
+                onSelectionChange={setUserSelected}
+                items={users}
+              >
+                {(user) => (
+                  <Dropdown.Item key={user.id} >
+                    {user.name}
+                  </Dropdown.Item>
+                )}
+              </Dropdown.Menu>
+            </Dropdown>
+
+            {console.log(selectedValue)}
             <Button
               onClick={handleAddTodo}
               css={{ ml: "$10" }}
@@ -183,10 +216,10 @@ console.log(timezoneOffsetInSeconds);
             </Button>
           </Box>
           <Pagination
-          css={{
-            float:"right",
-            position:"relative"
-          }}
+            css={{
+              float: "right",
+              position: "relative"
+            }}
             onClick={(e) => {
               setCurrentPage(Number(e.target.textContent));
             }}
@@ -208,7 +241,7 @@ console.log(timezoneOffsetInSeconds);
               </Grid>
             ))}
           </Grid.Container>
-         
+
         </Box>
         <ToastContainer
           position="bottom-right"
@@ -242,7 +275,7 @@ console.log(timezoneOffsetInSeconds);
         />
       </Box>
     );
-  } 
+  }
 };
 
 export default TodoList;

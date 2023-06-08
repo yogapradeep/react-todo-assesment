@@ -24,18 +24,18 @@ import dayjs, { Dayjs } from 'dayjs';
 const TodoCard = ({ item, setTodos, setLoading }) => {
   const [visible, setVisible] = useState(false);
   const [task_msg, setTask_msg] = useState(item.task_msg);
-  const [completed, setCompleted] = useState(null);
-  
+  const [completed, setCompleted] = useState(0);
+
   const formattedDate = dayjs(item.task_date).format('DD-MM-YYYY');
-  console.log(formattedDate); // output 16.06.2023
+  // console.log(formattedDate); // output 16.06.2023
 
   const hours = Math.floor(item.task_time / 3600);
-  const minutes = Math.floor((item.task_time  % 3600) / 60);
+  const minutes = Math.floor((item.task_time % 3600) / 60);
   const period = hours >= 12 ? 'pm' : 'am';
 
   const formattedTime = `${String(hours % 12).padStart(2, '0')}:${String(minutes).padStart(2, '0')}${period}`;
 
-console.log(formattedTime); // Output: "01:30am"
+  // console.log(formattedTime); // Output: "01:30am"
 
   const handler = () => setVisible(true);
 
@@ -59,11 +59,20 @@ console.log(formattedTime); // Output: "01:30am"
     setLoading(false);
   };
 
+  
   const handleSetCompleted = (id) => {
     const query = {
-      isCompleted: !item.isCompleted,
+      isCompleted: completed ,
     };
-    UpdateTodo(id, query)
+    UpdateTodo(id, {
+      "assigned_user": item.assigned_user,
+      "task_date": item.task_date,
+      "task_time": item.task_time,
+      "is_completed": completed,
+      "time_zone": item.time_zone,
+      "task_msg": task_msg === "" ? item.task_msg : task_msg
+
+    })
       .then((res) => notify("Updating"))
       .catch((err) => {
         notify("Upss somethings went wrong")
@@ -73,6 +82,7 @@ console.log(formattedTime); // Output: "01:30am"
         notify("Updated");
       });
   };
+  
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -82,13 +92,20 @@ console.log(formattedTime); // Output: "01:30am"
 
   const handleUpdateTodo = (id) => {
     const query = {
-      isCompleted: completed === null ? item.isCompleted :completed ,
+      isCompleted: completed,
       task_msg: task_msg === "" ? item.task_msg : task_msg,
+
     };
-      UpdateTodo(id, {
-        isCompleted: completed === null ? item.isCompleted : completed,
-        task_msg: task_msg === "" ? item.task_msg : task_msg,
-      })
+
+    UpdateTodo(id, {
+      "assigned_user": item.assigned_user,
+      "task_date": item.task_date,
+      "task_time": item.task_time,
+      "is_completed": completed,
+      "time_zone": item.time_zone,
+      "task_msg": task_msg === "" ? item.task_msg : task_msg
+
+    })
       .then((res) => notify("Updating"))
       .catch((err) => {
         notify("Upss somethings went wrong")
@@ -100,45 +117,46 @@ console.log(formattedTime); // Output: "01:30am"
 
     setVisible(false);
   };
-  
-  
+
+
 
 
   return (
     <>
       <Card  >
-        
+
         <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
           <Col>
             <Tooltip
               content={
-                item.isCompleted === true ? "Completed" : "Not Completed"
+                item.isCompleted === 1 ? "Completed" : "Not Completed"
               }
-              color={item.isCompleted === true ? "success" : "error"}
+              color={item.isCompleted === 1 ? "success" : "error"}
             >
               <Badge
                 css={{ border: "none" }}
-                color={item.isCompleted === true ? "success" : "error"}
+                color={item.isCompleted === 1 ? "success" : "error"}
                 variant="points"
               />
             </Tooltip>
-            
+
           </Col>
         </Card.Header>
-        <Card.Body css={{ pt: 50,
-        width: 300,
-         height: 200,
-          }}>
-           
-              
-      <Text h3>{item.task_msg}</Text>
-      <Text h5>{formattedDate} at {formattedTime}</Text>
+        <Card.Body css={{
+          pt: 50,
+          width: 300,
+          height: 200,
+        }}>
 
-      {/* <Text h5>Date,Time, Zone format to API</Text>
+
+          <Text h3>{item.task_msg}</Text>
+          <Text h5>{formattedDate} at {formattedTime}</Text>
+
+          {/* <Text h5>Date,Time, Zone format to API</Text>
       <Text h5>{item.task_date}</Text>
       <Text h6>{item.task_time}</Text>
       <Text h6>{item.time_zone}</Text> */}
-      
+
         </Card.Body>
         <Card.Footer
           isBlurred
@@ -158,7 +176,7 @@ console.log(formattedTime); // Output: "01:30am"
             </Tooltip>
             <Tooltip
               content={
-                item.isCompleted === true ? "Do UnCompleted" : "Do Completed"
+                item.isCompleted === 1 ? "Do UnCompleted" : "Do Completed"
               }
             >
               <IconButton
@@ -188,12 +206,12 @@ console.log(formattedTime); // Output: "01:30am"
         onClose={closeHandler}
       >
         <Modal.Header>
-         
-          
-            <Text b size={18}>
-            Edit Todo 
-            </Text>
-          
+
+
+          <Text b size={18}>
+            Edit Todo
+          </Text>
+
         </Modal.Header>
         <Modal.Body>
           <Input
@@ -215,8 +233,8 @@ console.log(formattedTime); // Output: "01:30am"
               label="Status"
               defaultValue={item.isCompleted}
             >
-              <Radio value={true}>Completed</Radio>
-              <Radio value={false}>Not Completed</Radio>
+              <Radio value={1}>Completed</Radio>
+              <Radio value={0}>Not Completed</Radio>
             </Radio.Group>
           </Row>
         </Modal.Body>
