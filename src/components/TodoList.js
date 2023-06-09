@@ -40,11 +40,10 @@ const TodoList = () => {
 
 
 
-  const [UserSelected, setUserSelected] = React.useState(new Set(["User"]));
+  const [UserSelected, setUserSelected] = React.useState("user");
 
   const selectedValue = React.useMemo(
-    () => Array.from(UserSelected).join(", ").replaceAll("_", " "),
-    [UserSelected]
+    () => Array.from(UserSelected), [UserSelected]
   );
 
 
@@ -70,7 +69,7 @@ const TodoList = () => {
       const timezoneOffsetInSeconds = Math.abs(currentDate.getTimezoneOffset() * 60);
       // console.log(timezoneOffsetInSeconds);
 
-      AddTodo({ assigned_user: selectedValue, task_date: task_date, task_time: timeInSeconds, time_zone: timezoneOffsetInSeconds, is_completed: 0, task_msg: task_msg })
+      AddTodo({ assigned_user: selectedValue[0], task_date: task_date, task_time: timeInSeconds, time_zone: timezoneOffsetInSeconds, is_completed: 0, task_msg: task_msg })
         .then((res) => notify("Addedtasks"))
         .catch((err) => notify("Upss somethings went wrong"))
         .finally(() => {
@@ -195,15 +194,16 @@ const TodoList = () => {
                 onSelectionChange={setUserSelected}
                 items={users}
               >
-                {(user) => (
-                  <Dropdown.Item key={user.id} >
-                    {user.name}
+                {(item) => (
+                  <Dropdown.Item key={item.id} >
+                    {item.name}
                   </Dropdown.Item>
                 )}
               </Dropdown.Menu>
             </Dropdown>
 
-            {console.log(selectedValue)}
+            {/* {console.log("slected value",selectedValue)}
+            {console.log("uservalue value",UserSelected)} */}
             <Button
               onClick={handleAddTodo}
               css={{ ml: "$10" }}
