@@ -12,20 +12,20 @@ let userId = "user_8c2ff2128e70493fa4cedd2cab97c492";
 const Authentication = (email, password) => {
 
 
-const apiUrl = 'https://stage.api.sloovi.com/login?product=outreach';
+  const apiUrl = 'https://stage.api.sloovi.com/login?product=outreach';
 
-const loginpostData = {
-  email: email,
-  password: password,
-};
+  const loginpostData = {
+    email: email,
+    password: password,
+  };
 
-const headers = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
-};
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  };
 
-const result = axios.post(apiUrl, JSON.stringify(loginpostData), { headers })
-return result;
+  const result = axios.post(apiUrl, JSON.stringify(loginpostData), { headers })
+  return result;
 };
 
 
@@ -39,53 +39,53 @@ const commonheaders = {
 
 const TeamApi = () => {
 
-const teamApiUrl = "https://stage.api.sloovi.com/team?product=outreach&company_id=company_0f8d040401d14916bc2430480d7aa0f8";
-const result =  axios.get(teamApiUrl, { headers: commonheaders })
-return result;
+  const teamApiUrl = "https://stage.api.sloovi.com/team?product=outreach&company_id=company_0f8d040401d14916bc2430480d7aa0f8";
+  const result = axios.get(teamApiUrl, { headers: commonheaders })
+  return result;
 }
 
 
 // tasks
 
-  // 1.1 adding taks
+// 1.1 adding taks
 const fetchputapiUrl = `https://stage.api.sloovi.com/task/lead_65b171d46f3945549e3baa997e3fc4c2?company_id=company_0f8d040401d14916bc2430480d7aa0f8`;
 
-const AddTodo =  (data) => {
-  const result =  axios.post(fetchputapiUrl, data, { headers: commonheaders })
-  .then(response => {
-    // Handle the success response
-    console.log('Task added successfully:', response.data);
-  })
-  .catch(error => {
-    // Handle the error response
-    console.error('Error adding task:', error);
-  });
+const AddTodo = (data) => {
+  const result = axios.post(fetchputapiUrl, data, { headers: commonheaders })
+    .then(response => {
+      // Handle the success response
+      console.log('Task added successfully:', response.data);
+    })
+    .catch(error => {
+      // Handle the error response
+      console.error('Error adding task:', error);
+    });
 
   return result;
 }
 
- // 1.2 getting tasks
+// 1.2 getting tasks
 const GetTodos = () => {
-  const result =   axios.get(fetchputapiUrl, { headers: commonheaders })
+  const result = axios.get(fetchputapiUrl, { headers: commonheaders })
   return result;
 };
 
 // // 1.3 getting single task
 
 
-const GetSingleTask =  (taskId) => {
-const singletaskapiUrl = `https://stage.api.sloovi.com/task/lead_65b171d46f3945549e3baa997e3fc4c2/${taskId}?company_id=${companyId}`;
+const GetSingleTask = (taskId) => {
+  const singletaskapiUrl = `https://stage.api.sloovi.com/task/lead_65b171d46f3945549e3baa997e3fc4c2/${taskId}?company_id=${companyId}`;
 
-const result =  axios.get(singletaskapiUrl, { headers: commonheaders })
-  .then(response => {
-    const task = response.data.results;
+  const result = axios.get(singletaskapiUrl, { headers: commonheaders })
+    .then(response => {
+      const task = response.data.results;
 
-    // Handle the task
-    console.log(task);
-  })
-  .catch(error => {
-    console.error(error);
-  });
+      // Handle the task
+      console.log(task);
+    })
+    .catch(error => {
+      console.error(error);
+    });
   return result;
 };
 
@@ -95,35 +95,44 @@ const result =  axios.get(singletaskapiUrl, { headers: commonheaders })
 
 // 1.4 updatedata
 
-const UpdateTodo =  (id, data) => {
+const UpdateTodo = (id, data) => {
   const updateTaskUrl = `https://stage.api.sloovi.com/task/lead_65b171d46f3945549e3baa997e3fc4c2/${id}?company_id=company_0f8d040401d14916bc2430480d7aa0f8`;
 
-  const result =  axios.put(updateTaskUrl, data, { headers: commonheaders })
-  .then(response => {
-    // Handle the response
-    console.log('Task updated successfully:', response.data);
-  })
-  .catch(error => {
-    // Handle the error
-    console.error('Error updating task:', error);
-  });
-  
+  const result = axios.put(updateTaskUrl, data, { headers: commonheaders })
+  // .then(response => {
+  //   // Handle the response
+  //   console.log("response code:", response.data.code);
+  //   if(response.data.code ===400 || response.data.status === "error"){
+  //     console.log("Error occured while updating: ", response.data);
+  //     throw(response.data);
+  //   }
+  //   else{
+  //     console.log('Task updated successfully:', response.data);
+  //   }
+
+
+  // })
+  // .catch(error => {
+  //   // Handle the error
+  //   console.error('Error updating task:', error);
+  // });
+
 
   return result;
 };
 
 // 1.5 delete tasks
 
-const DeleteTodo =  (id) => {
-const deletetaskApi = `https://stage.api.sloovi.com/task/lead_65b171d46f3945549e3baa997e3fc4c2/${id}?company_id=${companyId}`;
+const DeleteTodo = (id) => {
+  const deletetaskApi = `https://stage.api.sloovi.com/task/lead_65b171d46f3945549e3baa997e3fc4c2/${id}?company_id=${companyId}`;
 
-const result = axios.delete(deletetaskApi, { headers: commonheaders })
-  .then(response => {
-    console.log('Task deleted successfully');
-  })
-  .catch(error => {
-    console.error('Error deleting task:', error);
-  });
+  const result = axios.delete(deletetaskApi, { headers: commonheaders })
+    .then(response => {
+      console.log('Task deleted successfully', response.data);
+    })
+    .catch(error => {
+      console.error('Error deleting task:', error);
+    });
   return result;
 };
 
