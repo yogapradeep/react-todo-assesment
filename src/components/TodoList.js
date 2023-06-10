@@ -7,7 +7,14 @@ import {
   useTheme,
   Text,
   Pagination,
-  Dropdown
+  Dropdown,
+  Modal,
+  Row,
+  Col,
+  Checkbox,
+  Popover,
+  Container,
+  gray,
 } from "@nextui-org/react";
 import { ToastContainer, toast } from "react-toastify";
 import { Box } from "./Box";
@@ -59,12 +66,12 @@ const TodoList = () => {
     setLoading(true);
     if (task_msg.trim().length > 2) {
 
-      const formattedTime = dayjs(task_time).format('HH:mm:ss');
-      // console.log("before conversion", formattedTime);
-      const [hours, minutes] = formattedTime.split(":");
+      //  Time Conversion HH:MM into SS
+      const [hours, minutes] = task_time.split(":");
       const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
-
       // console.log(timeInSeconds);
+
+      // TimeZone Offset Value
       const currentDate = new Date();
       const timezoneOffsetInSeconds = Math.abs(currentDate.getTimezoneOffset() * 60);
       // console.log(timezoneOffsetInSeconds);
@@ -84,15 +91,16 @@ const TodoList = () => {
             .finally(() => {
               setLoading(false);
               notify("Success");
+              setTask_msg("");
+              setTask_date("");
+              setTask_time("");
             });
         })
     } else {
       notify("Todo content length min 3 characters")
     }
 
-    setTask_msg("");
-    setTask_date("");
-    setTask_time("");
+
 
   };
 
@@ -116,6 +124,14 @@ const TodoList = () => {
   }, []);
 
 
+  // update UI
+  const [visible, setVisible] = React.useState(false);
+  const handler = () => setVisible(true);
+
+  const closeHandler = () => {
+    setVisible(false);
+    console.log("closed");
+  };
 
   if (todos) {
     return (
@@ -137,53 +153,58 @@ const TodoList = () => {
           </Box>
         }
       >
-        <Box css={{ mt: "$5" }}>
-          <Box
-            css={{
-              mt: "$15",
-              mb: "$10",
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+
+
+        {/* adding Task Modal */}
+        <Modal
+          closeButton
+          aria-labelledby="adding_task"
+          open={visible}
+          onClose={closeHandler}
+        >
+          <Modal.Header>
+            <Text id="adding_task" size={18}>
+              <h3>Adding Task</h3>
+            </Text>
+          </Modal.Header>
+          <Modal.Body>
             <Input
-              width="400px"
               clearable
-              bordered
-              labelPlaceholder="Task Desc"
+              label="Task Description"
               value={task_msg}
               onChange={(e) => setTask_msg(e.target.value)}
               onKeyDown={handleKeyDown}
-              css={{
-                mr: "$10",
-              }}
             />
 
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
+            <Row justify="space-between">
+              <Input
+                width="45%"
                 label="Date"
+                type="date"
                 value={task_date}
-                onChange={(newvalue) => {
-                  const formattedDate = dayjs(newvalue).format('YYYY-MM-DD');
+                onChange={(event) => {
+                  const newDate = event.target.value;
+                  const formattedDate = new Date(newDate).toISOString().split("T")[0];
+                  console.log("selected date", newDate);
+                  console.log("formated date", formattedDate);
                   setTask_date(formattedDate)
                 }}
               />
-            </LocalizationProvider>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <TimePicker
+              <Input
+                width="45%"
                 label="Time"
-                value={task_time}
-                onChange={(newValue) => {
-                  setTask_time(newValue)
-                }} />
-            </LocalizationProvider>
+                type="time"
+                id="time" step="1800" min="00:00" max="23:59"
+                name="time" value={task_time}
+                onChange={(event) => {
+                  const newTime = event.target.value;
+                  console.log(newTime);
+                  setTask_time(newTime);
+                }}
+              />
+            </Row>
 
-
-
-            {console.log(users)}
+            {/* {console.log(users)} */}
             <Dropdown>
               <Dropdown.Button flat>{selectedValue}</Dropdown.Button>
               <Dropdown.Menu aria-label="Single selection actions"
@@ -204,43 +225,47 @@ const TodoList = () => {
 
             {/* {console.log("slected value",selectedValue)}
             {console.log("uservalue value",UserSelected)} */}
-            <Button
-              onClick={handleAddTodo}
-              css={{ ml: "$10" }}
-              color={theme.colors.gray800.value}
-              auto
-            >
-              <Text b color={theme.colors.black.value}>
-                Add
-              </Text>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button auto flat color="error" onPress={closeHandler}>
+              Cancel
             </Button>
-          </Box>
-          <Pagination
+
+            <Button onPress={handleAddTodo} css={{ ml: "$10" }} auto   >
+              Add
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+
+        <Box css={{ m: "$10" }}>
+
+          <Container
             css={{
-              float: "right",
-              position: "relative"
+              w: 500, border: "solid 2px #ECF0F1", p: 0
+
             }}
-            onClick={(e) => {
-              setCurrentPage(Number(e.target.textContent));
-            }}
-            total={
-              todos.length % todosPerPage === 0
-                ? todos.length / todosPerPage
-                : Math.floor(todos.length / todosPerPage + 1)
-            }
-            initialPage={currentPage}
-          />
-          <Grid.Container gap={2} justify="flex-start">
-            {currentTodos.map((item) => (
-              <Grid key={item.id} xs={10} sm={6} md={3}>
-                <TodoCard
-                  setLoading={setLoading}
-                  setTodos={setTodos}
-                  item={item}
-                />
-              </Grid>
+          >
+
+            <Row justify="space-between" css={{
+              bgColor: "#F2F1EF", p: 10
+
+            }}>
+              <Text><h3>Task</h3></Text>
+              <Button auto shadow onPress={handler}>
+                Add Task
+              </Button>
+            </Row>
+            {todos.map((item) => (
+              // <Grid key={item.id} xs={10} sm={6} md={3}>
+              <TodoCard
+                setLoading={setLoading}
+                setTodos={setTodos}
+                item={item}
+              />
+              // </Grid>
             ))}
-          </Grid.Container>
+          </Container>
 
         </Box>
         <ToastContainer

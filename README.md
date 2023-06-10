@@ -15,13 +15,11 @@ https://pradeep-react-todo.netlify.app/
 ## Project Images
 
 ### Light Mode 
-![login-light](./public/login_page.png)
-![todo-light](./public/homepage.png)
-![todo-light-modal](./public/update_modal.png)
+![login-page](./public/login_page.png)
+![Home page](./public/home_page.png)
+![adding Task Moadl](./public/Adding%20Task.png)
+![Update Task Modal](./public/Update%20Task.png)
 
-### Dark Mode 
-![todo-todo](./public/darkmode_homepage.png)
-![todo Modal](./public/darkmode_modal.png)
 
 
 
