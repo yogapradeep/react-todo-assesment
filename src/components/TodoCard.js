@@ -41,7 +41,7 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
   }, []);
 
   const [users, setUsers] = useState([]);
-  const [UserSelected, setUserSelected] = React.useState("user");
+  const [UserSelected, setUserSelected] = useState("user");
 
   const selectedValue = React.useMemo(
     () => Array.from(UserSelected), [UserSelected]
@@ -84,6 +84,8 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
   const timeInSeconds = parseInt(reupdatehours) * 3600 + parseInt(reupdateminutes) * 60;
   // console.log(timeInSeconds);
 
+
+  // Modal close handler
   const handler = () => setVisible(true);
 
   const closeHandler = () => {
@@ -95,7 +97,10 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
   const handleDeleteTodo = (id) => {
     setLoading(true);
     DeleteTodo(id)
-      .then((res) => notify("Deleting"))
+      .then((res) => {
+        closeHandler();
+        notify("Deleting")
+    })
       .catch((err) => {
         notify("Upss somethings went wrong")
       })
@@ -158,6 +163,7 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
 
     UpdateTodo(id, query)
       .then((res) => {
+        closeHandler();
         notify("Updating")
         console.log("update response data", res.data);
         if (res.data.code === 400 || res.data.status === "error") {

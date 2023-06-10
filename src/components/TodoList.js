@@ -45,13 +45,20 @@ const TodoList = () => {
   const currentTodos = todos.sort((a, b) => b.id - a.id).slice(indexOfFirstTodo, indexOfLastTodo);
 
 
-
-
-  const [UserSelected, setUserSelected] = React.useState("user");
+  const [UserSelected, setUserSelected] = useState("user");
 
   const selectedValue = React.useMemo(
     () => Array.from(UserSelected), [UserSelected]
   );
+
+   // TO close Modal
+   const [visible, setVisible] = useState(false);
+   const handler = () => setVisible(true);
+ 
+   const closeHandler = () => {
+     setVisible(false);
+     console.log("closed");
+   };
 
 
   const notify = (proccess) => toast(proccess);
@@ -77,7 +84,11 @@ const TodoList = () => {
       // console.log(timezoneOffsetInSeconds);
 
       AddTodo({ assigned_user: selectedValue[0], task_date: task_date, task_time: timeInSeconds, time_zone: timezoneOffsetInSeconds, is_completed: 0, task_msg: task_msg })
-        .then((res) => notify("Addedtasks"))
+        .then((res) => {
+          closeHandler();
+          notify("Addedtasks")
+       
+      })
         .catch((err) => notify("Upss somethings went wrong"))
         .finally(() => {
 
@@ -124,14 +135,7 @@ const TodoList = () => {
   }, []);
 
 
-  // update UI
-  const [visible, setVisible] = React.useState(false);
-  const handler = () => setVisible(true);
-
-  const closeHandler = () => {
-    setVisible(false);
-    console.log("closed");
-  };
+ 
 
   if (todos) {
     return (
