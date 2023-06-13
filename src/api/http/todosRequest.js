@@ -52,14 +52,14 @@ const fetchputapiUrl = `https://stage.api.sloovi.com/task/lead_65b171d46f3945549
 
 const AddTodo = (data) => {
   const result = axios.post(fetchputapiUrl, data, { headers: commonheaders })
-    .then(response => {
-      // Handle the success response
-      console.log('Task added successfully:', response.data);
-    })
-    .catch(error => {
-      // Handle the error response
-      console.error('Error adding task:', error);
-    });
+    // .then(response => {
+    //   // Handle the success response
+    //   console.log('Task added successfully:', response.data);
+    // })
+    // .catch(error => {
+    //   // Handle the error response
+    //   console.error('Error adding task:', error);
+    // });
 
   return result;
 }

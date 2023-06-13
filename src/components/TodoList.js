@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import {
   Grid,
   Loading,
@@ -21,12 +21,7 @@ import { Box } from "./Box";
 import TodoCard from "./TodoCard";
 import { GetTodos, AddTodo, TeamApi } from "../api/http/todosRequest";
 
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import dayjs, { Dayjs } from 'dayjs';
+
 
 const TodoList = () => {
   const { type, theme } = useTheme();
@@ -35,21 +30,32 @@ const TodoList = () => {
   const [task_date, setTask_date] = useState("");
   const [task_time, setTask_time] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const todosPerPage = 8;
-
   const [users, setUsers] = useState([]);
-
-  const indexOfLastTodo = currentPage * todosPerPage;
-  const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
-  const currentTodos = todos.sort((a, b) => b.id - a.id).slice(indexOfFirstTodo, indexOfLastTodo);
-
-
   const [UserSelected, setUserSelected] = useState("user");
 
-  const selectedValue = React.useMemo(
+  const selectedValue = useMemo(
     () => Array.from(UserSelected), [UserSelected]
   );
+
+  useEffect(() => {
+    TeamApi().then((res) => {
+      setUsers(res.data.results.data);
+
+    }).catch((err) => {
+      console.log(err);
+    });
+
+    GetTodos()
+      .then((res) => {
+        setTodos(res.data.results);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+
+  }, [todos]);
+
 
    // TO close Modal
    const [visible, setVisible] = useState(false);
@@ -85,15 +91,15 @@ const TodoList = () => {
 
       AddTodo({ assigned_user: selectedValue[0], task_date: task_date, task_time: timeInSeconds, time_zone: timezoneOffsetInSeconds, is_completed: 0, task_msg: task_msg })
         .then((res) => {
-          closeHandler();
-          notify("Addedtasks")
-       
-      })
-        .catch((err) => notify("Upss somethings went wrong"))
-        .finally(() => {
-
-          GetTodos()
-            .then((res) => {
+          console.log("Response data while adding:", res.data);
+          if (res.data.code === 400 || res.data.status === "error") {
+            notify("Error occured while adding");
+            console.log("Error occured while addng: ", res.data);
+          } else {
+            console.log("Response data while adding is success:", res.data.results);
+            closeHandler();
+            notify("Addedtasks");
+            GetTodos().then((res) => {
               setTodos(res.data.results);
             })
             .catch((err) => {
@@ -106,6 +112,17 @@ const TodoList = () => {
               setTask_date("");
               setTask_time("");
             });
+
+         
+          }
+
+         
+       
+      })
+        .catch((err) => notify("Upss somethings went wrong"))
+        .finally(() => {
+
+         
         })
     } else {
       notify("Todo content length min 3 characters")
@@ -115,24 +132,7 @@ const TodoList = () => {
 
   };
 
-  useEffect(() => {
-    TeamApi().then((res) => {
-      setUsers(res.data.results.data);
 
-    }).catch((err) => {
-      console.log(err);
-    });
-
-    GetTodos()
-      .then((res) => {
-        setTodos(res.data.results);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-
-  }, []);
 
 
  
@@ -162,6 +162,7 @@ const TodoList = () => {
         {/* adding Task Modal */}
         <Modal
           closeButton
+          blur
           aria-labelledby="adding_task"
           open={visible}
           onClose={closeHandler}
@@ -261,13 +262,13 @@ const TodoList = () => {
               </Button>
             </Row>
             {todos.map((item) => (
-              // <Grid key={item.id} xs={10} sm={6} md={3}>
-              <TodoCard
+             
+              <TodoCard key={item.id}
                 setLoading={setLoading}
                 setTodos={setTodos}
                 item={item}
               />
-              // </Grid>
+       
             ))}
           </Container>
 
