@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Card,
   Col,
@@ -19,20 +19,23 @@ import { DeleteIcon } from "./icons/deleteIcon";
 import { IconButton } from "./icons/IconButton";
 import { EditIcon } from "./icons/editIcon";
 import { EyeIcon } from "./icons/eyeIcon";
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import dayjs, { Dayjs } from 'dayjs';
 
 const TodoCard = ({ item, setTodos, setLoading }) => {
-  const [visible, setVisible] = useState(false);
+ 
   const [task_msg, setTask_msg] = useState(item.task_msg);
   const [task_date, setTask_date] = useState(item.task_date);
   const [completed, setCompleted] = useState(0);
+  const [users, setUsers] = useState([]);
+  const [UserSelected, setUserSelected] = useState("user");
+
+  const selectedValue = useMemo(
+    () => Array.from(UserSelected), [UserSelected]
+  );
 
   useEffect(() => {
     TeamApi().then((res) => {
       setUsers(res.data.results.data);
-      console.log("userdata @ todocard:", res.data.results.data)
+      // console.log("userdata @ todocard:", res.data.results.data);
 
     }).catch((err) => {
       console.log(err);
@@ -40,17 +43,20 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
 
   }, []);
 
-  const [users, setUsers] = useState([]);
-  const [UserSelected, setUserSelected] = useState("user");
-
-  const selectedValue = React.useMemo(
-    () => Array.from(UserSelected), [UserSelected]
-  );
+ 
+ 
 
 
   //  Date & Time Manipulation
-  const formattedDate = dayjs(item.task_date).format('DD-MM-YYYY');
-  // console.log(formattedDate); // output 16.06.2023
+
+  // Split the date string into year, month, and day components
+const [year, month, day] = item.task_date.split('-');
+
+// Rearrange the components in the desired format
+const formattedDate = `${day}-${month}-${year}`;
+
+// console.log(formattedDate); // Output: 01-06-2023
+
 
   const hours = Math.floor(item.task_time / 3600);
   const minutes = Math.floor((item.task_time % 3600) / 60);
@@ -85,12 +91,13 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
   // console.log(timeInSeconds);
 
 
-  // Modal close handler
+  // To Modal close
+  const [visible, setVisible] = useState(false);
   const handler = () => setVisible(true);
-
   const closeHandler = () => {
     setVisible(false);
   };
+  
 
   const notify = (proccess) => toast(proccess);
 
@@ -100,13 +107,15 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
       .then((res) => {
         closeHandler();
         notify("Deleting")
+        GetTodos().then((res) => setTodos(res.data.results));
+        notify("Deleted");
     })
       .catch((err) => {
         notify("Upss somethings went wrong")
       })
       .finally(() => {
-        GetTodos().then((res) => setTodos(res.data.results));
-        notify("Deleted");
+       
+       
       });
     setLoading(false);
   };
@@ -172,13 +181,14 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
         } else {
           notify("Updated");
           console.log("updated successfully", res.data);
+          GetTodos().then((res) => setTodos(res.data.results));
         }
       })
       .catch((err) => {
 
       })
       .finally(() => {
-        GetTodos().then((res) => setTodos(res.data.results));
+       
       });
 
     setVisible(false);
@@ -190,7 +200,7 @@ const TodoCard = ({ item, setTodos, setLoading }) => {
   return (
     <>
       {/* Task Card */}
-      <Card css={{
+      <Card  css={{
         width: 450,
         height: 120,
         m: 20,
